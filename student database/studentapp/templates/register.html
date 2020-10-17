@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+{% block content %}
+     <div class="container-fluid view-tools mt-2 mb-2 p-2">
+        <form method="POST" class="reg-form" id=form>
+            {{ form.csrf_token }}
+            {{ form.hidden_tag() }}
+          <legend class="lead display-4 mb-3">Register</legend>
+          <div class="form-group">
+              {{ form.register_id.label(class="font-weight-bold") }}
+              {% if form.register_id.errors %}
+                {{ form.register_id(class = "form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for errors in form.register_id.errors %}
+                        <span>{{ errors }}</span>
+                    {% endfor %}
+                </div>
+              {% else %}
+                {{ form.register_id(class="form-control") }}
+              {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.register_fname.label(class="font-weight-bold") }}
+              {% if form.register_fname.errors %}
+                {{ form.register_fname(class = "form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for errors in form.register_fname.errors %}
+                        <span>{{ errors }}</span>
+                    {% endfor %}
+                </div>
+              {% else %}
+                {{ form.register_fname(class="form-control") }}
+              {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.register_lname.label(class="font-weight-bold") }}
+              {% if form.register_lname.errors %}
+                {{ form.register_lname(class = "form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for errors in form.register_lname.errors %}
+                        <span>{{ errors }}</span>
+                    {% endfor %}
+                </div>
+              {% else %}
+                {{ form.register_lname(class="form-control") }}
+              {% endif %}
+          </div>
+          <div class="form-group">
+           {{ form.register_course.label(class="font-weight-bold") }}
+              {% if form.register_course.errors %}
+                {{ form.register_course(class = "form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for errors in form.register_course.errors %}
+                        <span>{{ errors }}</span>
+                    {% endfor %}
+                </div>
+              {% else %}
+                {{ form.register_course(class="form-control") }}
+              {% endif %}
+          </div>
+            {{ form.register_submit(class="btn btn-primary ml-auto") }}
+        </form>
+        <div class="bg" style="background-image: url({{ url_for('static', filename='images/college.png') }})">
+        </div>
+      </div>
+{% endblock content %}

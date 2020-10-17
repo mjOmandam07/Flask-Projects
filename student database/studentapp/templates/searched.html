@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block content %}
+   <div class="container-fluid">
+        <div class="container-fluid home-view-tools mt-5 p-4 pt-2">
+             <div class>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+    				{% if messages %}
+    					{% for category, message in messages %}
+    						<div class = "alert alert-{{ category }}">
+    							{{ message }}
+    						</div>
+    					{% endfor %}
+    				{% endif %}
+    			{% endwith %}
+          </div>
+            {% if students %}
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12">
+
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th scope="col">ID Number</th>
+                      <th scope="col">First Name</th>
+                      <th scope="col">Last Name</th>
+                      <th scope="col">Course</th>
+                      <th scope="col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                  {% for student in students %}
+                    <tr>
+                      <th scope="row">{{ student[0] }}</th>
+                      <td>{{ student[1] }}</td>
+                      <td>{{ student[2] }}</td>
+                      <td>{{ student[3] }}</td>
+                      <td>
+                        <a href="{{ url_for('update', id_number = student[0])}}" class="btn btn-info mr-2"> View Data </a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+
+              </div>
+            </div>
+          </div>
+            {%else%}
+            <div class="row">
+                <div class="col">
+                    <h1 class="display-4 font-weight-light">Student not Found</h1>
+                    <p>Please Enter A valid ID Number</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+      </div>
+{% endblock content %}

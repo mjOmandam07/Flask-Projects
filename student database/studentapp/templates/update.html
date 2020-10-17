@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="container-fluid view-tools mb-4">
+        <form method="POST" class="reg-form m-4 p-4" id="form">
+            {{ form.csrf_token }}
+            {{ form.hidden_tag() }}
+          <div class="form-group">
+              {{ form.update_id.label(class="font-weight-bold") }}
+              {% if form.update_id.errors %}
+                {{ form.update_id(class = "form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for errors in form.update_id.errors %}
+                        <span>{{ errors }}</span>
+                    {% endfor %}
+                </div>
+              {% else %}
+                {{ form.update_id(class="form-control") }}
+              {% endif %}
+          </div>
+          <div class="form-group">
+              {{ form.update_fname.label(class="font-weight-bold") }}
+              {% if form.update_fname.errors %}
+                {{ form.update_fname(class = "form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for errors in form.update_fname.errors %}
+                        <span>{{ errors }}</span>
+                    {% endfor %}
+                </div>
+              {% else %}
+                {{ form.update_fname(class="form-control") }}
+              {% endif %}
+          </div>
+          <div class="form-group">
+              {{ form.update_lname.label(class="font-weight-bold") }}
+              {% if form.update_lname.errors %}
+                {{ form.update_lname(class = "form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for errors in form.update_lname.errors %}
+                        <span>{{ errors }}</span>
+                    {% endfor %}
+                </div>
+              {% else %}
+                {{ form.update_lname(class="form-control") }}
+              {% endif %}
+          </div>
+          <div class="form-group">
+              {{ form.update_course.label(class="font-weight-bold") }}
+              {% if form.update_course.errors %}
+                {{ form.update_course(class = "form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for errors in form.update_course.errors %}
+                        <span>{{ errors }}</span>
+                    {% endfor %}
+                </div>
+              {% else %}
+                {{ form.update_course(class="form-control") }}
+              {% endif %}
+          </div>
+            {{ form.update_submit(class="btn btn-primary ml-auto") }}
+            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
+              Delete
+            </button>
+        </form>
+        <div class="bg ml-4" style="background-image: url({{ url_for('static', filename='images/college.png') }})">
+        </div>
+      </div>
+      <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Hello, {{ form.update_fname.data }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <h1 class="lead">Do you really want to delete data?</h1>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  <a href="{{ url_for('delete', id_number = form.update_id.data )}}" class="btn btn-danger mr-2">Delete</a>
+              </div>
+            </div>
+          </div>
+      </div>
+
+
+
+
+{% endblock content %}
