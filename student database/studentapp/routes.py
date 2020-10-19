@@ -67,7 +67,7 @@ def update(id_number):
 
 
 
-@app.route('/searched/<string:id_number>', methods=['GET', 'POST'])
+@app.route('/searched/<string:id_number>', methods=['GET'])
 def searched(id_number):
     if request.method == "POST":
         if request.form["search"]:
