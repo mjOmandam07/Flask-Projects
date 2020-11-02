@@ -1,13 +1,15 @@
 from studentapp import mysql
 from studentapp.for_valid import current_id
 class students(object):
-    def __init__(self, id=None, id_number=None, firstname=None, lastname=None, course=None, filter=None):
+    def __init__(self, id=None, id_number=None, firstname=None, lastname=None, course=None, filter=None, college=None, dept=None):
         self.id = id
         self.id_number = id_number
         self.firstname = firstname
         self.lastname = lastname
         self.course = course
         self.filter = filter
+        self.college = college
+        self.dept = dept
 
 
 
@@ -63,19 +65,35 @@ class students(object):
 
 
 
-
-    def all(self):
+    @classmethod
+    def all(cls):
         cursor = mysql.connection.cursor()
 
-        if self.filter == 'id':
-            sql = "SELECT * FROM students ORDER BY id_number ASC"
+        sql = """SELECT s.id, s.firstName, s.lastName, c.code, s.yearLevel, d.name, clg.code, clg.name FROM
+                    (((student AS s LEFT JOIN course AS c ON s.course = c.code)
+                    LEFT JOIN department as d ON c.deptNo = d.id)
+                    LEFT JOIN college AS clg ON d.college_code = clg.code )"""
 
-        elif self.filter == 'lname':
-            sql = "SELECT * FROM students ORDER BY lastname ASC"
 
-        elif self.filter == 'course':
-            sql = "SELECT * FROM students ORDER BY course ASC"
+        cursor.execute(sql)
+        display = cursor.fetchall()
+        return display
 
+
+    def showDept(self):
+        cursor = mysql.connection.cursor()
+
+        sql = "SELECT d.name FROM department as d WHERE d.college_code = '{}'".format(self.college)
+
+        cursor.execute(sql)
+        dept_display = cursor.fetchall()
+        return dept_display
+
+    def showCourse(self):
+        cursor = mysql.connection.cursor()
+        sql = """SELECT d.name, c.code,c.name, clg.code FROM 
+                ((department AS d JOIN course as c ON d.id = c.deptNo AND d.name = '{}' )
+                JOIN college as clg ON c.college_code = clg.code AND clg.code != 'SGS')""".format(self.dept)
 
         cursor.execute(sql)
         display = cursor.fetchall()

@@ -6,13 +6,13 @@ import studentapp.models as models
 
 
 
-@app.route('/')
+'''@app.route('/')
 def land():
-    return redirect(url_for('home', fltr='id'))
-
-@app.route('/home/filterBY<string:fltr>', methods=['GET', 'POST'])
-def home(fltr):
-    student = models.students(filter=fltr)
+    return redirect(url_for('home', fltr='id'))'''
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/home', methods=['GET', 'POST'])
+def home():
+    student = models.students()
     students = student.all()
     if request.method == "POST":
         if request.form["search"]:
@@ -20,7 +20,7 @@ def home(fltr):
             return redirect(url_for('searched', id_number=id))
         else:
             flash('Please Enter an I.D Number', 'danger')
-            return redirect(url_for('home'), fltr='id')
+            return redirect(url_for('home'))
     else:
         return render_template('index.html', students=students)
 
@@ -29,7 +29,10 @@ def home(fltr):
 
 @app.route('/register', methods=['GET','POST'])
 def register():
+    students = models.students()
+    opt = students.showCourse()
     form = registerForm()
+    form.register_college.choices = [(i[0]) for i in opt]
     if request.method == "POST" and form.validate_on_submit():
         student = models.students(id_number=form.register_id.data, firstname=form.register_fname.data, lastname=form.register_lname.data, course=form.register_course.data)
         student.add()
@@ -92,3 +95,26 @@ def delete(id_number):
     students = students.delete()
     flash('Student data has been deleted', 'success')
     return redirect(url_for('home', fltr='id'))
+
+
+
+
+@app.route('/colleges')
+def colleges():
+    return render_template('colleges.html', banner='Colleges')
+
+
+@app.route('/<string:college>departments')
+def department(college):
+    db = models.students(college=college)
+    dept = db.showDept()
+    return redirect (url_for('courses', college=college, dept=dept[0][0]))
+
+@app.route('/courses/<string:college>/<string:dept>', methods=['GET'])
+def courses(college, dept):
+    course = models.students(dept=dept)
+    courses = course.showCourse()
+    department = models.students(college=college)
+    depts = department.showDept()
+    print(depts)
+    return render_template('courses.html', course = courses, depts=depts, banner=college) 

@@ -38,22 +38,28 @@
                 <li class="navbar-item">
                   <a href="{{ url_for('register') }}#form" class="nav-link pl-2"> Add New Student </a>
                 </li>
+                <li class="navbar-item">
+                  <a href="{{ url_for('colleges') }}" class="nav-link">Colleges </a>
+                </li>
               {% else %}
                 <li class="navbar-item">
-                  <a href="{{ url_for('register') }}#form" class="nav-link"> Add New Student </a>
+                  <a href="{{ url_for('register') }}" class="nav-link"> Add New Student </a>
+                </li>
+                <li class="navbar-item">
+                  <a href="{{ url_for('colleges') }}" class="nav-link">Colleges </a>
                 </li>
               {% endif %}
             </ul>
             <form method="POST" class="form-inline my-2 my-lg-0 ml-auto">
               <input class="form-control mr-sm-2" type="search" placeholder="Search I.D" aria-label="Search" name="search">
-              <input class="btn btn-outline-primary my-2 my-sm-0" value="Search" type="submit"/>
+              <input class="btn btn-outline-danger my-2 my-sm-0" value="Search" type="submit"/>
             </form>
           </div>
         </div>
       </nav>
     </header>
-    <div class="container-fluid hero" id="top">
-      <div class="jumbotron jumbotron-fluid mt-3">
+    <div class="container-fluid hero p-0" id="top">
+      <div class="jumbotron jumbotron-fluid mt-3 ml-0 mr-0">
         <div class="container-fluid pt-3 pl-4 m-0">
           <div class="row">
                 {% if banner %}
