@@ -1,4 +1,4 @@
-from flask import render_template, redirect, request, url_for, flash
+from flask import render_template, redirect, request, url_for, flash, jsonify
 from studentapp import app
 from studentapp.for_valid import current_id
 from studentapp.forms import registerForm, updateForm
@@ -29,16 +29,18 @@ def home():
 
 @app.route('/register', methods=['GET','POST'])
 def register():
-    students = models.students()
-    opt = students.showCourse()
+    db = models.students()
+    college = db.showCollege()
     form = registerForm()
-    form.register_college.choices = [(i[0]) for i in opt]
-    if request.method == "POST" and form.validate_on_submit():
+    form.register_college.choices = [(item[0]) for item in college]
+    return render_template('register.html', banner='Add Student',title='Register', form=form)
+
+    '''if request.method == "POST" and form.validate_on_submit():
         student = models.students(id_number=form.register_id.data, firstname=form.register_fname.data, lastname=form.register_lname.data, course=form.register_course.data)
         student.add()
         return redirect(url_for('searched', id_number=form.register_id.data))
     else:
-        return render_template('register.html', banner='Add Student',title='Register', form=form)
+        return render_template('register.html', banner='Add Student',title='Register', form=form)'''
 
 
 
@@ -67,6 +69,62 @@ def update(id_number):
     banner = "Hi, " + banner_data[1]
     title = banner_data[1] + " " + banner_data[2]
     return render_template('update.html', banner=banner, title=title, form=form)
+
+
+@app.route('/dept/<string:get_dept>')
+def deptByCollege(get_dept):
+    if get_dept != 'SGS':
+        db = models.students(college=get_dept)
+        dept = db.showDept()
+
+        deptArray = []
+        for item in dept:
+            deptObj = {}
+            deptObj['id'] = item[0]
+            deptObj['name'] = item[1]
+            deptObj['college_code'] = item[2]
+            deptArray.append(deptObj)
+        return jsonify({'department':deptArray})
+    else:
+        db = models.students(college=get_dept)
+        dept = db.showSGSdept()
+
+        deptArray = []
+        for item in dept:
+            deptObj = {}
+            deptObj['id'] = item[0]
+            deptObj['name'] = item[1]
+            deptObj['college_code'] = item[2]
+            deptArray.append(deptObj)
+        return jsonify({'department':deptArray})
+
+
+@app.route('/course/<string:get_course>')
+def courseByDept(get_course):
+    db = models.students(dept=get_course)
+    course = db.showCourse()
+
+    courseArray = []
+    for item in course:
+        courseObj = {}
+        courseObj['department'] = item[0]
+        courseObj['code'] = item[1]
+        courseObj['name'] = item[2]
+        courseObj['college_code'] = item[4]
+        courseArray.append(courseObj)
+    return jsonify({'course':courseArray})
+   
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -106,15 +164,29 @@ def colleges():
 
 @app.route('/<string:college>departments')
 def department(college):
-    db = models.students(college=college)
-    dept = db.showDept()
-    return redirect (url_for('courses', college=college, dept=dept[0][0]))
+    if college != 'SGS':
+        db = models.students(college=college)
+        dept = db.showDept()
+        return redirect (url_for('courses', college=college, dept=dept[0][1]))
+    else:
+        db = models.students()
+        dept = db.showSGSdept()
+        return redirect (url_for('courses', college=college, dept=dept[0][1]))
 
-@app.route('/courses/<string:college>/<string:dept>', methods=['GET'])
+@app.route('/courses/<string:college>/<string:dept>')
 def courses(college, dept):
-    course = models.students(dept=dept)
-    courses = course.showCourse()
-    department = models.students(college=college)
-    depts = department.showDept()
-    print(depts)
-    return render_template('courses.html', course = courses, depts=depts, banner=college) 
+    if college != 'SGS':
+        course = models.students(dept=dept)
+        courses = course.showCourse()
+        department = models.students(college=college)
+        depts = department.showDept()
+        banner = "("+college+")"+" "+courses[0][3]
+        return render_template('courses.html', course = courses, depts=depts, banner=banner, clg=college)
+    else:
+        course = models.students(dept=dept)
+        courses = course.showSGScourse()
+        department = models.students(college=college)
+        depts = department.showSGSdept()
+        banner = "("+college+")"+" "+courses[0][3]
+        return render_template('courses.html', course = courses, depts=depts, banner=banner, clg=college)
+
