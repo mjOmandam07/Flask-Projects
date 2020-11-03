@@ -79,19 +79,29 @@ class students(object):
         display = cursor.fetchall()
         return display
 
+    @classmethod
+    def showCollege(cls):
+        cursor = mysql.connection.cursor()
+
+        sql = "SELECT * FROM college"
+
+        cursor.execute(sql)
+        display = cursor.fetchall()
+        return display
+
 
     def showDept(self):
         cursor = mysql.connection.cursor()
 
-        sql = "SELECT d.name FROM department as d WHERE d.college_code = '{}'".format(self.college)
+        sql = "SELECT * FROM department as d WHERE d.college_code = '{}'".format(self.college)
 
         cursor.execute(sql)
-        dept_display = cursor.fetchall()
-        return dept_display
+        display = cursor.fetchall()
+        return display
 
     def showCourse(self):
         cursor = mysql.connection.cursor()
-        sql = """SELECT d.name, c.code,c.name, clg.code FROM 
+        sql = """SELECT d.name, c.code,c.name, clg.name, clg.code FROM 
                 ((department AS d JOIN course as c ON d.id = c.deptNo AND d.name = '{}' )
                 JOIN college as clg ON c.college_code = clg.code AND clg.code != 'SGS')""".format(self.dept)
 
@@ -99,5 +109,29 @@ class students(object):
         display = cursor.fetchall()
         return display
 
+
+
+    @classmethod
+    def showSGSdept(cls):
+        cursor = mysql.connection.cursor()
+
+        sql ="""SELECT DISTINCT d.id, d.name, c.college_code
+            FROM course as c, department as d
+            WHERE c.deptNo = d.id AND c.college_code = 'SGS'"""
+
+        cursor.execute(sql)
+        display = cursor.fetchall()
+        return display
+
+    def showSGScourse(self):
+        cursor = mysql.connection.cursor()
+
+        sql ="""SELECT d.name, c.code, c.name, clg.name FROM ((course as c JOIN department as d 
+        ON c.deptNo = d.id AND d.name = '{}')
+        JOIN college as clg ON c.college_code = clg.code AND c.college_code = 'SGS')""".format(self.dept)
+
+        cursor.execute(sql)
+        display = cursor.fetchall()
+        return display
 
 
