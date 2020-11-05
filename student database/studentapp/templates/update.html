@@ -1,16 +1,38 @@
 {% extends "layout.html" %}
 {% block content %}
     <div class="container-fluid view-tools mt-3 mb-3 p-2">
-      <form class="container-fluid reg-form h-100 m-0 p-4">
+      <form method="POST" class="container-fluid reg-form h-100 m-0 p-4">
+          {{ form.csrf_token }}
+          {{ form.hidden_tag() }}
         <legend class="lead display-4 mb-3">Update</legend>
           <div class="container-fluid form-row">
-            <div class="form-group col-md-6 w-100">
-              <label for="fnameInput" class="font-weight-bold">First Name</label>
-              <input type="text" class="form-control" id="fnameInput" />
+
+             <div class="form-group col-md-6 w-100">
+              {{ form.update_fname.label(class="font-weight-bold") }}
+              {% if form.update_fname.errors %}
+                {{ form.update_fname(class = "form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for errors in form.update_fname.errors %}
+                        <span>{{ errors }}</span>
+                    {% endfor %}
+                </div>
+              {% else %}
+                {{ form.update_fname(class="form-control") }}
+              {% endif %}
             </div>
+
             <div class="form-group col-md-6 w-75">
-              <label for="lnameInput" class="font-weight-bold">Last Name</label>
-              <input type="text" class="form-control" id="fnameInput" />
+              {{ form.update_lname.label(class="font-weight-bold") }}
+              {% if form.update_lname.errors %}
+                {{ form.update_lname(class = "form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for errors in form.update_lname.errors %}
+                        <span>{{ errors }}</span>
+                    {% endfor %}
+                </div>
+              {% else %}
+                {{ form.update_lname(class="form-control") }}
+              {% endif %}
             </div> 
           </div>
 
@@ -30,9 +52,19 @@
             </div>
 
             <div class="form-group  col-md-3">
-              <label for="iDInput" class="font-weight-bold">ID Number</label>
-              <input type="text" class="form-control form-control-md" id="iDInput" />
+              {{ form.update_id.label(class="font-weight-bold") }}
+              {% if form.update_id.errors %}
+                {{ form.update_id(class = "form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for errors in form.update_id.errors %}
+                        <span>{{ errors }}</span>
+                    {% endfor %}
+                </div>
+              {% else %}
+                {{ form.update_id(class="form-control") }}
+              {% endif %}
             </div>
+
             <div class="form-group col">
               {{ form.update_college.label(class="font-weight-bold") }}
               {% if form.update_college.errors %}
@@ -94,7 +126,7 @@
           </div>
         <div class="container-fluid">
           {{ form.update_submit(class="btn btn-primary btn-outline-light mr-auto") }}
-          <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
+          <button type="button" class="btn btn-danger btn-outline-light" data-toggle="modal" data-target="#deleteModal">
               Delete
           </button>
         </div>
@@ -119,9 +151,41 @@
               </div>
             </div>
           </div>
+      <script>
+        college_select = document.getElementById('update_college')
+        dept_select = document.getElementById('update_department');
+        course_select = document.getElementById('update_course');
+
+        college_select.onchange = function(){
+          college = college_select.value;
+          fetch('/dept/' + college).then(function(response){
+            response.json().then(function(data){
+              choice = '';
+              for (item of data.department){
+                choice += '<option value = "' + item.name_value + '">' + item.name + '</option>'
+              }
+              dept_select.innerHTML = choice
+              course_select.innerHTML = ''
+            });
+          }); 
+        };
+
+        dept_select.onchange = function(){
+          dept = dept_select.value;
+          college = college_select.value;
+          fetch('/course/'+college+'/'+dept).then(function(response){
+            response.json().then(function(data){
+              choice = '';
+              for (item of data.course){
+                  choice += '<option value = "'+ item.code + '">'+item.code+' '+item.name +'</option>'
+              }
+              course_select.innerHTML = choice
+            })
+          })
+        }
+    </script>
       </div>
-
-
+    
 
 
 {% endblock content %}

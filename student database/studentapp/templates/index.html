@@ -72,7 +72,7 @@
               </div>
               
             </form>
-              <table class="table table-bordered m-0 text-center">
+              <table class="table table-bordered m-0 text-center p-4">
                 <tr class=" header bg-danger text-light">
                   <th scope="col">ID Number</th>
                   <th scope="col">Name</th>
@@ -91,7 +91,9 @@
                     <td>Department of {{ student[5] }}</td>
                     <td>{{ student[7] }}</td>
                     <td>
-                        <a href="{{ url_for('update', id_number = student[0])}}#form" class="btn btn-info mr-2"> View Data </a>
+                      <a  href="{{ url_for('update', id_number = student[0])}}" type="button" class="btn btn-info">
+                        More...
+                      </a>
                     </td>
                   </tr>
                 {% endfor %}

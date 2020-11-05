@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
      <div class="container-fluid view-tools mt-3 mb-3 p-2">
-      <form class="container-fluid reg-form h-100 m-0 p-4">
+      <form method='POST' class="container-fluid reg-form h-100 m-0 p-4">
           {{ form.csrf_token }}
           {{ form.hidden_tag() }}
         <legend class="lead display-4 mb-3">Register</legend>
@@ -128,4 +128,37 @@
       </form>
 
       </div>
+      <script>
+        college_select = document.getElementById('register_college');
+        dept_select = document.getElementById('register_department');
+        course_select = document.getElementById('register_course');
+
+        college_select.onchange = function(){
+          college = college_select.value;
+          fetch('dept/' + college).then(function(response){
+            response.json().then(function(data){
+              choice = '';
+              for (item of data.department){
+                choice += '<option value = "' + item.name_value + '">' + item.name + '</option>'
+              }
+              dept_select.innerHTML = choice
+              course_select.innerHTML = ''
+            });
+          }); 
+        };
+
+        dept_select.onchange = function(){
+          dept = dept_select.value;
+          college = college_select.value;
+          fetch('course/'+college+'/'+dept).then(function(response){
+            response.json().then(function(data){
+              choice = '';
+              for (item of data.course){
+                  choice += '<option value = "'+ item.code + '">'+item.code+'&nbsp&nbsp'+item.name +'</option>'
+              }
+              course_select.innerHTML = choice
+            })
+          })
+        }
+      </script>
 {% endblock content %}

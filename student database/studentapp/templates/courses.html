@@ -15,7 +15,7 @@
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                   {% for dept in depts %}
-                                  <li><a class="dropdown-item" href="{{ url_for('courses', college=banner, dept=dept[0]) }}">{{ dept[0] }}</a></li>
+                                  <li><a class="dropdown-item" href="{{ url_for('courses', college=clg, dept=dept[1]) }}">{{ dept[1] }}</a></li>
                                   {% endfor %}
                                 </ul>
                             </div>
@@ -48,7 +48,7 @@
                     {% for course in course %}
                     <table class="table table-borderless lead">
                         <tr>
-                            <td><p class="font-weight-bold d-inline-block">{{ course[1] }}</p> &nbsp &nbsp{{ course[2] }}</td>
+                            <td><p class="font-weight-bold d-inline-block p-0 m-0">{{ course[1] }}</p> &nbsp &nbsp{{ course[2] }}</td>
                         </tr>
                         
                         
@@ -61,7 +61,7 @@
                <h1 class="display-2">Select Department</h1>
             </div>
             {% for dept in dept %}
-            <a href="" class="d-inline-block p-2 text-dark">
+            <a href="" class="d-inline-block p-0 text-dark">
               <div>
                 <p class="lead">{{dept[0]}}</p>
               </div>
