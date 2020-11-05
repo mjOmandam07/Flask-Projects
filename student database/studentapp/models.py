@@ -1,12 +1,22 @@
 from studentapp import mysql
 from studentapp.for_valid import current_id
 class students(object):
-    def __init__(self, id=None, id_number=None, firstname=None, lastname=None, course=None, filter=None, college=None, dept=None):
+    def __init__(self, id=None, id_number=None,
+                        firstname=None, lastname=None, 
+                        yearlvl=None, gender=None, 
+                        course=None, filter=None, 
+                        college=None, dept=None
+                                                ):
+
         self.id = id
+
         self.id_number = id_number
         self.firstname = firstname
         self.lastname = lastname
+        self.yearlvl = yearlvl
+        self.gender = gender
         self.course = course
+
         self.filter = filter
         self.college = college
         self.dept = dept
@@ -15,17 +25,25 @@ class students(object):
 
     def add(self):
         cursor = mysql.connection.cursor()
-        input = (self.id_number, self.firstname, self.lastname, self.course)
 
-        sql = "INSERT INTO students(id_number, firstname, lastname, course) VALUES (%s,%s,%s,%s)"
+        sql = """INSERT INTO student(id, firstName, lastName, yearLevel, gender, course)
+             VALUES ('%s','%s','%s',%d,'%s','%s')""" % (self.id_number, 
+                                                        self.firstname, 
+                                                        self.lastname, 
+                                                        self.yearlvl, 
+                                                        self.gender, 
+                                                        self.course)
 
-        cursor.execute(sql, input)
+        cursor.execute(sql)
         mysql.connection.commit()
 
 
     def search(self):
         cursor = mysql.connection.cursor()
-        sql = "SELECT * FROM students WHERE id_number = '{}'".format(self.id_number)
+        sql = """SELECT s.id, s.firstName, s.lastName, c.code, s.yearLevel, d.name, clg.code, clg.name, c.name, s.gender FROM
+                    (((student AS s LEFT JOIN course AS c ON s.course = c.code)
+                    LEFT JOIN department as d ON c.deptNo = d.id)
+                    LEFT JOIN college AS clg ON c.college_code = clg.code ) WHERE s.id = '{}'""".format(self.id_number)
 
         cursor.execute(sql)
 
@@ -33,22 +51,23 @@ class students(object):
         return display
 
     def update(self):
-        input = (self.id_number, self.firstname, self.lastname, self.course, self.id)
         cursor = mysql.connection.cursor()
-        sql = '''UPDATE students SET 
-                id_number = %s,
-                firstname = %s,
-                lastname = %s,
-                course = %s
-                WHERE id_number = %s'''
+        sql = """UPDATE student SET id = '%s', firstName = '%s', lastName = '%s', yearLevel = %d, gender = '%s', course = '%s'
+                WHERE id = '%s'"""  % (self.id_number, 
+                                        self.firstname, 
+                                        self.lastname, 
+                                        self.yearlvl, 
+                                        self.gender, 
+                                        self.course,
+                                        self.id)
 
-        cursor.execute(sql, input)
+        cursor.execute(sql)
         mysql.connection.commit()
 
 
     def validation(self):
         cursor = mysql.connection.cursor()
-        sql = "SELECT id_number FROM students WHERE id_number = '{}'".format(self.id_number)
+        sql = "SELECT id FROM student WHERE id = '{}'".format(self.id_number)
 
         cursor.execute(sql)
         display = cursor.fetchall()
@@ -58,7 +77,7 @@ class students(object):
 
     def delete(self):
         cursor = mysql.connection.cursor()
-        sql = "DELETE FROM students WHERE id_number = '{}'".format(self.id_number)
+        sql = "DELETE FROM student WHERE id = '{}'".format(self.id_number)
 
         cursor.execute(sql)
         mysql.connection.commit()
@@ -72,7 +91,7 @@ class students(object):
         sql = """SELECT s.id, s.firstName, s.lastName, c.code, s.yearLevel, d.name, clg.code, clg.name FROM
                     (((student AS s LEFT JOIN course AS c ON s.course = c.code)
                     LEFT JOIN department as d ON c.deptNo = d.id)
-                    LEFT JOIN college AS clg ON d.college_code = clg.code )"""
+                    LEFT JOIN college AS clg ON c.college_code = clg.code)"""
 
 
         cursor.execute(sql)
@@ -93,7 +112,9 @@ class students(object):
     def showDept(self):
         cursor = mysql.connection.cursor()
 
-        sql = "SELECT * FROM department as d WHERE d.college_code = '{}'".format(self.college)
+        sql = """SELECT DISTINCT c.deptNo, d.name, d.college_code FROM course as c 
+                JOIN department AS d  
+                ON d.id = c.deptNo AND c.college_code != 'SGS' AND d.college_code = '{}'""".format(self.college)
 
         cursor.execute(sql)
         display = cursor.fetchall()
@@ -126,7 +147,7 @@ class students(object):
     def showSGScourse(self):
         cursor = mysql.connection.cursor()
 
-        sql ="""SELECT d.name, c.code, c.name, clg.name FROM ((course as c JOIN department as d 
+        sql ="""SELECT d.name, c.code, c.name, clg.name, clg.code FROM ((course as c JOIN department as d 
         ON c.deptNo = d.id AND d.name = '{}')
         JOIN college as clg ON c.college_code = clg.code AND c.college_code = 'SGS')""".format(self.dept)
 
