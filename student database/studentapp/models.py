@@ -5,8 +5,8 @@ class students(object):
                         firstname=None, lastname=None, 
                         yearlvl=None, gender=None, 
                         course=None, filter=None, 
-                        college=None, dept=None
-                                                ):
+                        college=None, dept=None,
+                                              ):
 
         self.id = id
 
@@ -22,6 +22,27 @@ class students(object):
         self.dept = dept
 
 
+
+
+    def showAll(self):
+        cursor = mysql.connection.cursor()
+        if self.college != 'None' and self.filter !='None':
+            sql = """SELECT s.id, s.firstName, s.lastName, c.code, s.yearLevel, d.name, clg.code, clg.name FROM
+                        (((student AS s LEFT JOIN course AS c ON s.course = c.code)
+                        LEFT JOIN department as d ON c.deptNo = d.id)
+                        LEFT JOIN college AS clg ON c.college_code = clg.code)
+                        WHERE clg.code = '{}'
+                        ORDER BY '{}' """.format(self.college, self.filter)
+        else:
+            sql = """SELECT s.id, s.firstName, s.lastName, c.code, s.yearLevel, d.name, clg.code, clg.name FROM
+                    (((student AS s LEFT JOIN course AS c ON s.course = c.code)
+                    LEFT JOIN department as d ON c.deptNo = d.id)
+                    LEFT JOIN college AS clg ON c.college_code = clg.code)"""
+
+
+        cursor.execute(sql)
+        display = cursor.fetchall()
+        return display
 
     def add(self):
         cursor = mysql.connection.cursor()
@@ -72,8 +93,10 @@ class students(object):
         cursor.execute(sql)
         display = cursor.fetchall()
         for item in display:
-            if item[0] == self.id_number and item[0] not in current_id:
-                return True
+            if item[0] == self.id_number:
+                if item[0] not in current_id:
+                    return True
+           
 
     def delete(self):
         cursor = mysql.connection.cursor()
@@ -84,19 +107,7 @@ class students(object):
 
 
 
-    @classmethod
-    def all(cls):
-        cursor = mysql.connection.cursor()
-
-        sql = """SELECT s.id, s.firstName, s.lastName, c.code, s.yearLevel, d.name, clg.code, clg.name FROM
-                    (((student AS s LEFT JOIN course AS c ON s.course = c.code)
-                    LEFT JOIN department as d ON c.deptNo = d.id)
-                    LEFT JOIN college AS clg ON c.college_code = clg.code)"""
-
-
-        cursor.execute(sql)
-        display = cursor.fetchall()
-        return display
+   
 
     @classmethod
     def showCollege(cls):

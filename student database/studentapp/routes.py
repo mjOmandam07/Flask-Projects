@@ -1,28 +1,41 @@
 from flask import render_template, redirect, request, url_for, flash, jsonify
 from studentapp import app
 from studentapp.for_valid import current_id
-from studentapp.forms import registerForm, updateForm
+from studentapp.forms import registerForm, updateForm, filterForm
 import studentapp.models as models
 
 
 
-'''@app.route('/')
+@app.route('/')
 def land():
-    return redirect(url_for('home', fltr='id'))'''
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/home', methods=['GET', 'POST'])
-def home():
-    student = models.students()
-    students = student.all()
+    return redirect(url_for('home',clg='None', arnge='None'))
+
+@app.route('/home/<string:clg>/<string:arnge>', methods=['GET', 'POST'])
+def home(clg, arnge):
+    form = filterForm()
+    db = models.students()
+    college = db.showCollege()
+    college_arr = [('','Select College'),]
     if request.method == "POST":
-        if request.form["search"]:
+        if form.validate_on_submit():
+            college_data = form.filter_college.data
+            arrange_data = form.filter_arrange.data
+            return redirect(url_for('home', clg=college_data, arnge=arrange_data))
+        elif request.form["search"]:
             id = request.form["search"]
             return redirect(url_for('searched', id_number=id))
-        else:
+        elif not request.form["search"]:
             flash('Please Enter an I.D Number', 'danger')
-            return redirect(url_for('home'))
-    else:
-        return render_template('index.html', students=students)
+            return redirect(url_for('land')) 
+    for item in college:
+        college_arr.append((item[0],("("+item[0]+")  "+item[1])))
+    form.filter_college.choices = [item for item in college_arr]
+    db = models.students(college = clg,
+                            filter = arnge)
+    students = db.showAll()
+    form.filter_college.data = clg
+    form.filter_arrange.data = arnge        
+    return render_template('index.html', students=students, form=form)
 
 
 
@@ -32,7 +45,7 @@ def register():
     db = models.students()
     college = db.showCollege()
     form = registerForm()
-    college_arr = [('','Choose...'),]
+    college_arr = [('','Select College'),]
     for item in college:
         college_arr.append((item[0],("("+item[0]+")  "+item[1])))
     form.register_college.choices = [item for item in college_arr]
@@ -45,7 +58,8 @@ def register():
                             gender = form.register_gender.data , 
                             course = form.register_course.data)
         db.add()
-        return redirect(url_for('home'))
+        flash('New Student Added', 'success')
+        return redirect(url_for('searched', id_number=form.register_id.data))
     return render_template('register.html', banner='Add Student',title='Register', form=form)
 
 
@@ -54,11 +68,10 @@ def register():
 @app.route('/update/<string:id_number>', methods=['GET', 'POST'])
 def update(id_number):
     form = updateForm()
-    current_id.clear()
     courses = []
     db = models.students(id_number=id_number)
     college = db.showCollege()
-    college_arr = [('','Choose...'),]
+    college_arr = [('','Select College'),]
     for item in college:
         college_arr.append((item[0],("("+item[0]+")  "+item[1])))
     form.update_college.choices = [item for item in college_arr]
@@ -111,6 +124,7 @@ def update(id_number):
 
     banner = "Hi, " + banner_data[1]
     title = banner_data[1] + " " + banner_data[2]
+    current_id.clear()
     return render_template('update.html', banner=banner, title=title, form=form)
 
 
@@ -126,7 +140,7 @@ def deptByCollege(get_college):
         deptArray = [{
           "college_code": "Choose...", 
           "id": 0, 
-          "name": "Choose...", 
+          "name": "Select Department", 
           "name_value": ""
         }]
         for item in dept:
@@ -144,7 +158,7 @@ def deptByCollege(get_college):
         deptArray = [{
           "college_code": "Choose...", 
           "id": 0, 
-          "name": "Choose...", 
+          "name": "Select Department", 
           "name_value": " "
         }]
         for item in dept:
@@ -167,7 +181,7 @@ def courseByDept(get_college, get_dept):
         courseArray = [{"code": "", 
           "college_code": "", 
           "department": "Choose...", 
-          "name": "Choose..."
+          "name": "Select Course"
         }
         ]
         for item in course:
@@ -185,7 +199,7 @@ def courseByDept(get_college, get_dept):
         courseArray = [{"code":"", 
           "college_code": "", 
           "department": "Choose...", 
-          "name": "Choose..."
+          "name": "Select Course"
         }
         ]
         for item in course:
@@ -202,12 +216,15 @@ def courseByDept(get_college, get_dept):
        
 
 
-@app.route('/searched/<string:id_number>', methods=['GET'])
+@app.route('/searched/<string:id_number>', methods=['GET', 'POST'])
 def searched(id_number):
     if request.method == "POST":
         if request.form["search"]:
             id = request.form["search"]
             return redirect(url_for('searched', id_number=id))
+        elif not request.form["search"]:
+            flash('Please Enter an I.D Number', 'danger')
+            return redirect(url_for('land'))
     student = models.students(id_number=id_number)
     students = student.search()
     try:
@@ -226,7 +243,7 @@ def delete(id_number):
     students = models.students(id_number=id_number)
     students = students.delete()
     flash('Student data has been deleted', 'success')
-    return redirect(url_for('home', fltr='id'))
+    return redirect(url_for('land'))
 
 
 

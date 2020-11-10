@@ -7,23 +7,23 @@
                     <div class="col-8">
                         <h1 class="display-6">{{ course[0][0] }} Department</h1>
                     </div>
-                    <div class="col">
+                    <div class="col mt-4">
                         <div class="row">
                             <div class="col dropdown ">
-                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-flip="false" data-toggle="dropdown" aria-expanded="false">
                                   Department
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                   {% for dept in depts %}
-                                  <li><a class="dropdown-item" href="{{ url_for('courses', college=clg, dept=dept[1]) }}">{{ dept[1] }}</a></li>
+                                  <a class="deptmnt dropdown-item" href="{{ url_for('courses', college=clg, dept=dept[1]) }}">{{ dept[1] }}</a>
                                   {% endfor %}
                                 </ul>
                             </div>
-                            <div class="col dropdown">
-                                <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+                            <div class="col college dropdown">
+                                <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-flip="false" data-toggle="dropdown" aria-expanded="false">
                                   College
                                 </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <ul class=" college dropdown-menu" aria-labelledby="dropdownMenuButton">
                                   <li><a href="{{ url_for('department',college='COET') }}" class="dropdown-item">COET</a></li>
 
                                   <li><a href="{{ url_for('department',college='CSM') }}" class="dropdown-item" >CSM</a></li>

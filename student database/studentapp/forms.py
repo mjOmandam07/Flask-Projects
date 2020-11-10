@@ -8,9 +8,7 @@ def validate_id(FlaskForm, field):
     student = models.students(id_number=field.data)
     if student.validation():
         raise ValidationError('I.D Number already exists')
-def validate_selectField(FlaskForm, field):
-    if field.data == 'Choose...' or field.data == '':
-        raise ValidationError('Please Select one of the options provided')
+
 
 
 
@@ -26,11 +24,11 @@ class registerForm(FlaskForm):
     register_id = StringField('I.D Number', validators=[DataRequired(), validate_id, Regexp(regex=r"^[0-9]{4}-[0-9]{4}$", message="Please input a valid I.D Number")])
 
 
-    register_gender = myCustomSelectField('Gender', choices=[('','Choose...'),('Male','Male'),('Female','Female')], validators=[DataRequired(), validate_selectField])
-    register_yearLvl = myCustomSelectField('Year Level', choices=[('','Choose...'),(1,1),(2,2),(3,3),(4,4),(5,5)], validators=[DataRequired(), validate_selectField])
-    register_college = myCustomSelectField('College', choices=[], validators=[DataRequired(), validate_selectField])
-    register_department = myCustomSelectField('Department', choices=[], validators=[DataRequired(), validate_selectField])
-    register_course = myCustomSelectField('Course', choices=[], validators=[DataRequired(), validate_selectField])
+    register_gender = myCustomSelectField('Gender', choices=[('','Choose...'),('Male','Male'),('Female','Female')], validators=[DataRequired()])
+    register_yearLvl = myCustomSelectField('Year Level', choices=[('','Choose...'),(1,1),(2,2),(3,3),(4,4),(5,5)], validators=[DataRequired()])
+    register_college = myCustomSelectField('College', choices=[], validators=[DataRequired()])
+    register_department = myCustomSelectField('Department', choices=[], validators=[DataRequired()])
+    register_course = myCustomSelectField('Course', choices=[], validators=[DataRequired()])
 
     register_submit = SubmitField('Add New Student')
 
@@ -43,20 +41,18 @@ class updateForm(FlaskForm):
     update_id = StringField('I.D Number', validators=[DataRequired(), validate_id, Regexp(regex=r"^[0-9]{4}-[0-9]{4}$", message="Please input a valid I.D Number")])
 
 
-    update_gender = myCustomSelectField('Gender', choices=[('','Choose...'),('Male','Male'),('Female','Female')], validators=[DataRequired(), validate_selectField])
-    update_yearLvl = myCustomSelectField('Year Level', choices=[('','Choose...'),(1,1),(2,2),(3,3),(4,4),(5,5)], validators=[DataRequired(), validate_selectField])
-    update_college = myCustomSelectField('College', choices=[], validators=[DataRequired(), validate_selectField])
-    update_department = myCustomSelectField('Department', choices=[], validators=[DataRequired(), validate_selectField])
-    update_course = myCustomSelectField('Course', choices=[], validators=[DataRequired(), validate_selectField])
+    update_gender = myCustomSelectField('Gender', choices=[('','Choose...'),('Male','Male'),('Female','Female')], validators=[DataRequired()])
+    update_yearLvl = myCustomSelectField('Year Level', choices=[('','Choose...'),(1,1),(2,2),(3,3),(4,4),(5,5)], validators=[DataRequired()])
+    update_college = myCustomSelectField('College', choices=[], validators=[DataRequired()])
+    update_department = myCustomSelectField('Department', choices=[], validators=[DataRequired()])
+    update_course = myCustomSelectField('Course', choices=[], validators=[DataRequired()])
 
     update_submit = SubmitField('Update')
 
 class filterForm(FlaskForm):
-    filter_college = SelectField('College', choices=[], validators=[DataRequired()])
-    filter_department = SelectField('Department', choices=[], validators=[DataRequired()])
-    filter_course = SelectField('Course', choices=[], validators=[DataRequired()])
-    filter_arrange = SelectField('Arrange by', choices=['ID', 'Last Name', 'Course'], validators=[DataRequired()])
-    filter_submit = SubmitField('Submit Filter')
+    filter_college =  myCustomSelectField('College', choices=[], validators=[DataRequired()])
+    filter_arrange = myCustomSelectField('Arrange by', choices=[('','Arrange by'),('id','ID'), ('lastName','Last Name'),('Year','Year')], default='',validators=[DataRequired()])
+    filter_submit = SubmitField('Add Filter')
 
 
 
